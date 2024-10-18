@@ -1,8 +1,8 @@
 import "./styles.css";
+import { ProjectManager } from "./projectmanager.js"
+import { Task, TaskManager } from "./taskmanager.js"
 
-console.log('hello world!');
-
-let projetos = [
+export let projetos = [
     {projectName: 'default',
      tasks: [
             {
@@ -37,136 +37,35 @@ let projetos = [
     {projectName: 'completed'}
 ]
 
-if (typeof(Storage) !== "undefined") {
+// verificar se local storage é suportado
+/* if (typeof(Storage) !== "undefined") {
     console.log('localStorage is available!');
 } else {
     console.log("Web Storage não é suportado");
-}
+} */
 
+//testes de local storage
 /* localStorage.setItem('projetos', JSON.stringify(projetos));
 const storedProjects = JSON.parse(localStorage.getItem('projetos'));
 console.log(storedProjects[0].projectName); */
 
-console.clear();
-
-class ProjectManager {
-    static get listProjects() {
-        let projectsList = [];
-        for (let i = 0; i < projetos.length; i++) {
-            projectsList.push(projetos[i].projectName);
-        }
-        console.log(projectsList);
-    }
-    static addNewProject(newProjectName) {
-        let index = projetos.findIndex(proj => proj.projectName === newProjectName);
-
-        if(index === -1){
-            projetos.push({projectName: newProjectName});
-            console.log(projetos);
-        } else {
-            throw new Error(`Project "${newProjectName}" already exists!`)
-        }
-        
-    }
-    static removeProject(projectName) {
-        let index = projetos.findIndex(proj => proj.projectName === projectName);
-
-        if(index === -1){
-            throw new Error(`Project "${projectName}" not found!`)
-        }
-        if(projectName === 'completed'){
-            throw new Error(`Project "Completed" can't be deleted!`)
-        }
-        
-        projetos.splice(index,1);
-        console.log(projetos);
-    }
-}
-
-/* ProjectManager.addNewProject('saúde'); */
-/* ProjectManager.removeProject('Completed'); */
-
-
-
-class Task {
-    constructor(title,description,dueDate,priority,labels){
-        this.title = title;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.priority = priority;
-        this.labels = labels;
-    }
-}
-
-class TaskManager {
-    // add task to general projects
-    static addTaskToProject(task,projectName) {
-        const index = projetos.findIndex(proj => proj.projectName === projectName);
-        const newId = projetos[index].tasks.length + 1;
-
-        if(index === -1){
-            throw new Error(`Project "${projectName}" not found!`);
-        }
-
-        if (!projetos[index].tasks) {
-            projetos[index].tasks = [];
-        }
-        
-        projetos[index].tasks.push({
-            id: newId,
-            title: task.title,
-            description: task.description,
-            dueDate: task.dueDate,
-            priority: task.priority,
-            labels: task.labels
-        });
-
-        console.log(`Task "${task.title}" added to project "${projectName}".`);
-    }
-    // remove task from general projects
-    static remTaskFromProject(id,projectName) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === projectName);
-
-        if (projIndex === -1) {
-            throw new Error(`Project "${projectName}" not found!`);
-        }
-
-        const taskIndex = projetos[projIndex].tasks.findIndex(task => task.id === id);
-
-        if (taskIndex === -1) {
-            throw new Error(`Task with ID "${id}" not found in project "${projectName}".`);
-        }
-
-        projetos[projIndex].tasks.splice(taskIndex,1);
-        console.log(`Task with ID "${id}" removed from project "${projectName}".`);
-
-        this.reorderTaskNumber(projectName);
-    }
-    // reset tasks id number
-    static reorderTaskNumber(projectName) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === projectName);
-
-        if(projetos[projIndex].tasks.length != projetos[projIndex].tasks.at(-1).id) {
-            console.log(projetos[projIndex].tasks.length);
-            console.log(projetos[projIndex].tasks.at(-1).id);
-            console.log('teste1');
-            for (let i = 0; i < projetos[projIndex].tasks.length; i++) {
-                projetos[projIndex].tasks[i].id = i+1;
-            }
-        }
-    }
-    // testes
-}
-
+// console.clear();
 
 let tar01 = new Task('tarefa 99','fazer coisa ddd','2024-11-03',2,['label1','label2']);
 TaskManager.addTaskToProject(tar01,'default');
 
+// console.log(projetos);
 
 
-/* TaskManager.remTaskFromProject(1,'default');
-console.log(projetos);
 
- */
+// testes
+/* TaskManager.changeTaskName('default',1,'teste de nova task title');
+console.log(`task name changed from 'tarefa 01' to 'teste de nova task title'`);
+TaskManager.changeTaskDesc('default',1,'fazer coisa nenhuma');
+console.log(`task description changed from 'fazer tal coisa' to 'fazer coisa nenhuma'`);
+TaskManager.changeTaskDate('default',1,'2024-11-02');
+console.log(`task date changed from '2024-11-03' to '2024-11-02'`);
+TaskManager.changeTaskPriority('default',1,2);
+console.log('task priority changed from 1 to 2'); */
 
-
+TaskManager.addTaskLabel('default',1,'2025');
