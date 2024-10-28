@@ -132,3 +132,6 @@ dist
 # windows
 desktop.ini
 thumbs.db
+
+# backup 
+bkp/
