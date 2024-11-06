@@ -1,3 +1,305 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+:root {
+    font-family: Roboto;
+    --bar-blue: #1894db;
+}
 body {
-    background-color: rgb(201, 201, 201);
+    background-color: white;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+}
+a:link, a:visited {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+}
+a:hover, a:active {
+    color: red;
+}
+aside {
+    background-color: #f6f6f6;
+    min-width: 300px;
+    max-width: 300px;
+    height: 100vh;
+    padding: 100px 20px 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 75px;
+}
+main {
+    background-color: white;
+    width: 100%;
+    height: 100vh;
+    padding: 120px 20px 0 40px;
+}
+.secContainer > p {
+    padding: 10px 5px 10px 0;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+#tasksDiv,#projectsDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.menuProjItem::before {
+    content: '# ';
+}
+.menuProjItem > a {
+    cursor: pointer;
+}
+#labelsDiv {
+    font-size: .75rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.menuLabelTag {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+.tagSize1 {
+    background-color: rgb(189, 189, 189);
+    height: 1.5rem;
+    border-radius: .45rem;
+    padding: .3rem .5rem;
+    font-size: .65rem;
+}
+.tagSize2 {
+    background-color: rgb(155, 155, 155);
+    height: 1.75rem;
+    border-radius: .5rem;
+    padding: .5rem;
+    font-size: .75rem;
+}
+.tagSize3 {
+    background-color: rgb(104, 104, 104);
+    height: 2rem;
+    border-radius: .5rem;
+    padding: .75rem;
+    font-size: 1.1rem;
+}
+.taskContainer:first-of-type {
+    margin-top: 25px;
+    border-top: 1px solid rgb(223, 223, 223);
+}
+.taskContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px 20px 10px;
+    border-bottom: 1px solid rgb(223, 223, 223);
+    color: black;
+}
+.taskComplete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 60px;
+    min-width: 60px;
+}
+.taskInfo {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
+    cursor: pointer;
+}
+.taskInfo:hover {
+    background-color: rgb(247, 247, 247);
+}
+.taskDesc, .taskLabels {
+    color: rgb(59, 59, 59);
+    font-size: .95rem;
+    padding-top: 0;
+    margin-bottom: 0;
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transition: all .25s;
+}
+.taskDateInfo {
+    padding-top: 0;
+    transition: all .25s;
+}
+.taskDateInfo.expandedDate{
+    padding-top: 10px;
+}
+.taskTimeLeft {
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transition: all .25s;
+}
+.taskTimeLeft.expandedTimeLeft {
+    max-height: 50px;
+    visibility: visible;
+    opacity: 1;
+    transition: all .75s;
+}
+.taskLabels {
+    padding-bottom: 2px;
+}
+.expanded {
+    padding-top: 10px;
+    max-height: 600px;
+    visibility: visible;
+    opacity: 1;
+    transition: max-height 1s, visibility 1s, opacity 1s;
+}
+.taskTitle {
+    font-weight: 500;
+    color: rgb(61, 61, 61);
+}
+.taskDate, .taskTimeLeft {
+    color: rgb(67, 150, 67);
+    font-size: .9rem;
+}
+.taskLabels > span {
+    background-color: rgb(104, 104, 104);
+    font-size: .65rem;
+    color: white;
+    border-radius: 6px;
+    padding: 3px 6px;
+}
+.taskPriority {
+    color: red;
+    font-size: .8rem;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 60px;
+    max-width: 60px;
+    min-width: 60px;
+}
+.priorityTitle,.priorityNumber {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+#priorityField {
+    width: 100%;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 10px 0;
+    display: flex;
+    justify-content: flex-start;
+    gap: 20%;
+}
+#priorityField > div {
+    display: flex;
+    gap: 10px;
+}
+
+@keyframes removeCardAnimation {
+    0% { transform: translateX(0px); opacity: 1; }
+    50% { opacity: 0; }
+    100% { transform: translateX(110vw); }
+}
+.removeCard {
+    animation: removeCardAnimation .5s ease-in .25s forwards;
+}
+/* ---------------------------------------------------------------------------------------------------------------------------------- */
+/* MODAL */
+dialog {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    align-self: center;
+    justify-self: center;
+    background-color: transparent;
+    border: 0;
+}
+dialog::backdrop {
+    background-color: black;
+    opacity: 0.5;
+}
+.modal-title-bar {
+    background-color: var(--bar-blue);
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    height: 40px;
+    width: 400px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    color: white;
+}
+.modal-title-bar > span:nth-of-type(1) {
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+.formNewTask {
+    background-color: white;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 50px 20px 20px 20px;
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px rgb(128, 128, 128);
+}
+.formNewTask > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 3px;
+}
+#bTitle, #bDescription, #bDate, #bPriority, #bLabels {
+    font-size: .9rem;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid rgb(196, 196, 196);
+}
+#bDescription {
+    text-align: start;
+}
+#bDate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#bRegister,#bCancel {
+    border-width: 0;
+    border-radius: 5px;
+    background-color: var(--bar-blue);
+    padding: 10px 0;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    width: 120px;
+}
+#bRegister:hover, #bRegister:focus, #bCancel:hover, #bCancel:focus { 
+    transform: translate(-1px,-1px);
+}
+#bRegister:active, #bCancel:active {
+    transform: translate(1px,1px);
+}
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+}
+#formBtns {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
 }

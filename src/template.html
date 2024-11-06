@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do</title>
+</head>
+<body>
+    <aside>
+        <div class="secContainer">
+            <p><a href="" id="addTaskBtn">Add Task</a></p>
+            <div id="tasksDiv">
+                <p class="menuTaskFilter filterAll"><a href="javascript:void(0)">All tasks</a></p>
+                <p class="menuTaskFilter filterToday"><a href="javascript:void(0)">Today</a></p>
+                <p class="menuTaskFilter filterWeek"><a href="javascript:void(0)">This Week</a></p>
+                <p class="menuTaskFilter filterMonth"><a href="javascript:void(0)">This Month</a></p>
+                <p class="menuTaskFilter filter3Months"><a href="javascript:void(0)">Next 3 Months</a></p>
+            </div>
+        </div>
+        <div class="secContainer">
+            <p>Add Project</p>
+            <div id="projectsDiv">
+            </div>
+        </div>
+        <div class="secContainer">
+            <p>Labels:</p>
+            <div id="labelsDiv">
+            </div>
+        </div>
+    </aside>
+    <main>
+        <div> <span id="actualProject">All tasks in: (default)</span></div>
+        <div id="mainTaskContainer">
+        </div>
+    </main>
+
+<!-- modal -->
+<dialog>
+    <div class="modal-content">
+    <div class="modal-title-bar"><span>Create a new task!</span><span class="close">&times;</span></div>
+    <form action="" class="formNewTask" id="newTaskForm">
+        <div>
+            <label for="bTitle">Task Name</label>
+            <input type="text" name="bTitle" id="bTitle" required autofocus>
+        </div>
+        <div>
+            <label for="bDescription">Description</label>
+            <textarea name="bDescription" id="bDescription" cols="30" rows="7" required></textarea>
+        </div>
+        <div>
+            <label for="bDate">Date</label>
+            <input type="date" name="bDate" id="bDate" min="1" step="1" form="newTaskForm" required>
+        </div>
+        <div>
+            <p>Priority</p>
+            <div id="priorityField">
+                <div>
+                    <label for="bPriority1">1</label>
+                    <input type="radio" name="bPriority" id="bPriority1" value="1" required>
+                </div>
+                <div>
+                    <label for="bPriority2">2</label>
+                    <input type="radio" name="bPriority" id="bPriority2" value="2" required>
+                </div>
+                <div>
+                    <label for="bPriority3">3</label>
+                    <input type="radio" name="bPriority" id="bPriority3" value="3" required>
+                </div>
+            </div>
+        </div>
+        <div>
+            <label for="bLabels">Labels</label>
+            <input type="text" name="bLabels" id="bLabels" placeholder="Insert tags separated by commas. [Optional]">
+        </div>
+        <div id="formBtns">
+            <input id="bCancel" type="button" value="Cancel" formmethod="dialog">
+            <input id="bRegister" type="button" value="Register">
+        </div>
+    </form>
+    </div>
+</dialog>
+<!-- modal end -->
+
+    
+</body>
+</html>
+
+
+
+
+
+  

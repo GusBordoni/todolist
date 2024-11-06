@@ -1,122 +1,123 @@
-import { projetos } from "./app.js";
+import { projetos, tasks, getProjectsList } from "./app";
+import { differenceInDays, isThisISOWeek, startOfDay } from "date-fns";
+import { populateTasks, populateLabels } from "./dom";
 
 class Task {
-    constructor(title,description,dueDate,priority,labels){
+    constructor(project,title,description,dueDate,priority,labels) {
+        this.project = project;
+        this.previousProject = project;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
         this.labels = labels;
+        this.complete = false;
     }
 }
 
 class TaskManager {
-    // add task to general projects
-    static addTaskToProject(task,projectName) {
-        const index = projetos.findIndex(proj => proj.projectName === projectName);
-        const newId = projetos[index].tasks.length + 1;
-
-        if(index === -1){
-            throw new Error(`Project "${projectName}" not found!`);
-        }
-
-        if (!projetos[index].tasks) {
-            projetos[index].tasks = [];
-        }
-        
-        projetos[index].tasks.push({
-            id: newId,
-            title: task.title,
-            description: task.description,
-            dueDate: task.dueDate,
-            priority: task.priority,
-            labels: task.labels
-        });
-
-        console.log(`Task "${task.title}" added to project "${projectName}".`);
+    static listTasks() {
+        console.log(tasks);
     }
-    // remove task from general projects
-    static remTaskFromProject(id,projectName) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === projectName);
-
-        if (projIndex === -1) {
-            throw new Error(`Project "${projectName}" not found!`);
+    static getTaskIndexById(id) {
+        const itemIndex = tasks.findIndex(item => item.id === Number(id));
+        if (itemIndex === -1) {
+            throw new Error(`Task id#${id} not found.`);
         }
-
-        const taskIndex = projetos[projIndex].tasks.findIndex(task => task.id === id);
-
-        if (taskIndex === -1) {
-            throw new Error(`Task with ID "${id}" not found in project "${projectName}".`);
-        }
-
-        projetos[projIndex].tasks.splice(taskIndex,1);
-        console.log(`Task with ID "${id}" removed from project "${projectName}".`);
-
-        this.reorderTaskNumber(projectName);
+        return itemIndex;
     }
-    // reset tasks id number
-    static reorderTaskNumber(projectName) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === projectName);
-
-        if(projetos[projIndex].tasks.length != projetos[projIndex].tasks.at(-1).id) {
-            /* console.log(projetos[projIndex].tasks.length);
-            console.log(projetos[projIndex].tasks.at(-1).id);
-            console.log('teste1'); */
-            for (let i = 0; i < projetos[projIndex].tasks.length; i++) {
-                projetos[projIndex].tasks[i].id = i+1;
+    static addTask(task) {
+        const id = tasks.length + 1;
+        task['id'] = id;
+        tasks.push(task);
+        populateLabels();
+    }
+    static remTask(id) {
+        const itemIndex = this.getTaskIndexById(id);
+        if(itemIndex != -1) {
+            tasks.splice(itemIndex,1);
+            this.reorderTasks();
+        } else {
+            throw new Error(`Task id#${id} not found.`)
+        }
+    }
+    static moveTask(id,project) {
+        const itemIndex = this.getTaskIndexById(id);
+        if (tasks[itemIndex].project !== 'trash') {
+            tasks[itemIndex].previousProject = tasks[itemIndex].project;
+        }
+        tasks[itemIndex].project = project;
+    }
+    static restoreTask(id) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].project = tasks[itemIndex].previousProject;
+    }
+    static reorderTasks() {
+        if(tasks.length === 0 || !tasks.length) {
+            throw new Error('There are no tasks registered at the moment.')
+        }
+        if(tasks.length != tasks.at(-1).id) {
+            for (let i = 0; i < tasks.length; i++) {
+                tasks[i].id = i+1;
             }
         }
     }
+    static changeTaskTitle(id,newTitle) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].title = newTitle;
+    }
+    static changeTaskDesc(id,newDesc) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].description = newDesc;
+    }
+    static changeTaskDate(id,newDate) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].dueDate = newDate;
+    }
+    static changeTaskPriority(id,newPriority) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].priority = newPriority;
+    }
+    static addTaskLabel(id,label) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].labels.push(label);
+    }
+    static remTaskLabel(id,label) {
+        const itemIndex = this.getTaskIndexById(id);
+        const labelIndex = tasks[itemIndex].labels.findIndex(item => item === label);
+        if(labelIndex != -1) {
+            tasks[itemIndex].labels.splice(labelIndex,1);
+        } else {
+            throw new Error(`Label ${label} not found in task id#${id}.`)
+        }
+    }
+    static toggleComplete(id) {
+        const itemIndex = this.getTaskIndexById(id);
+        tasks[itemIndex].complete = !tasks[itemIndex].complete;
 
-    //change tasks info
-    static changeTaskName(project,task,title) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === project);
-        const taskID = projetos[projIndex].tasks.findIndex(taskItem => taskItem.id === task);
+        if (tasks[itemIndex].complete) {
+            this.moveTask(id, 'completed');
+        } else {
+            const previousProject = tasks[itemIndex].previousProject;
+            this.moveTask(id, previousProject);
+        }
+        populateTasks('default');
+    }
+    static calcTime(id) {
+        const today = startOfDay(new Date());
+        const dueDate = startOfDay(new Date(tasks[id - 1].dueDate));
         
-        projetos[projIndex].tasks[taskID].title = title;
-        console.log(projetos[projIndex].tasks[taskID]);
-    }
-    static changeTaskDesc(project,task,description) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === project);
-        const taskID = projetos[projIndex].tasks.findIndex(taskItem => taskItem.id === task);
-        
-        projetos[projIndex].tasks[taskID].description = description;
-        console.log(projetos[projIndex].tasks[taskID]);
-    }
-    static changeTaskDate(project,task,date) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === project);
-        const taskID = projetos[projIndex].tasks.findIndex(taskItem => taskItem.id === task);
-        
-        projetos[projIndex].tasks[taskID].dueDate = date;
-        console.log(projetos[projIndex].tasks[taskID]);
-    }
-    static changeTaskPriority(project,task,priority) {
-        const projIndex = projetos.findIndex(proj => proj.projectName === project);
-        const taskID = projetos[projIndex].tasks.findIndex(taskItem => taskItem.id === task);
-        
-        projetos[projIndex].tasks[taskID].priority = priority;
-        console.log(projetos[projIndex].tasks[taskID]);
-    }
-
-    // testes
-    static addTaskLabel(project,task,label){
-        const projIndex = projetos.findIndex(proj => proj.projectName === project);
-        const taskID = projetos[projIndex].tasks.findIndex(taskItem => taskItem.id === task);
-
-        const labelIndex = projetos[projIndex].tasks[taskID].labels.findIndex(labelItem => labelItem.task ) // continuar daqui... tem que a char o index da label pra poder ver se tem repetido ou não.. se ja tiver, não adicionar, se não tiver, adicionar (conforme codigo abaixo)
-        
-        projetos[projIndex].tasks[taskID].labels.push(label);
-        console.log(projetos[projIndex].tasks[taskID]);
-    }
-    static removeTaskLabel(project,task,label){
-
-    }
+        const daysLeft = differenceInDays(dueDate, today);
     
+        if (daysLeft === 0) {
+            return 'The task is today.';
+        } else if (daysLeft < 0) {
+            return `${Math.abs(daysLeft)} day${daysLeft > 1 ? 's' : ''} late`;
+        } else {
+            return `${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+        }
+    }
 }
-
-
-// criar uma função só pra dar erro?
-// criar uma função pra encontrar uma task - pq esse códido se repete por todo o código
 
 
 export { Task, TaskManager }
